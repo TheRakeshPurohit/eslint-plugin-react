@@ -3825,6 +3825,40 @@ ruleTester.run('no-unused-prop-types', rule, {
       `,
       features: ['types'],
     },
+    {
+      code: `
+        type Props = {
+          history: {
+            push: Function,
+          },
+          match?: {
+            params?: {
+              date?: string
+            },
+          },
+        };
+        
+        export const Daily = ({ history, match: {
+          params: {
+            date = moment().toISOString(),
+          } = {},
+        } = {} }: Props) => (
+              <div>
+                <div style={{ textAlign: 'right', paddingRight: '25px' }}>
+                  Show <DatePicker
+                    selected={moment(date)}
+                    className="datetime"
+                    onChange={d => history.push(\`./\${d.toISOString()}\`)}
+                  />
+                </div>
+                <WithData url="/payments/daily" body={{ date: moment(date).toISOString() }}>
+                  <Flashcards date={moment(date)} />
+                </WithData>
+              </div>
+        );
+      `,
+      features: ['types'],
+    },
   ]),
 
   invalid: parsers.all([].concat(
@@ -6540,6 +6574,32 @@ ruleTester.run('no-unused-prop-types', rule, {
       `,
       features: ['ts', 'no-babel'],
       errors: [{ message: '\'lastname\' PropType is defined but prop is never used' }],
+    },
+
+    {
+      code: `
+        import React from "react";
+
+        var Hello = React.createClass({
+          propTypes: {
+            name: React.PropTypes.string,
+            foo: React.PropTypes.string,
+            propTypes: React.PropTypes.string
+          },
+          render: function() {
+            return <div>Hello {this.props.name}</div>;
+          }
+        });
+      `,
+      settings: {
+        react: {
+          createClass: 'createClass',
+        },
+      },
+      errors: [
+        { message: '\'foo\' PropType is defined but prop is never used' },
+        { message: '\'propTypes\' PropType is defined but prop is never used' },
+      ],
     }
   )),
 });

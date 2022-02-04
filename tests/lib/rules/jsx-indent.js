@@ -1134,6 +1134,32 @@ const Component = () => (
       `,
       options: [2],
     },
+    {
+      code: `
+        const Item = ({ id, name, onSelect }) => <div onClick={onSelect}>
+          {id}: {name}
+        </div>;
+      `,
+      options: [2],
+    },
+    {
+      code: `
+        type Props = {
+          email: string,
+          password: string,
+          error: string,
+        }
+
+        const SomeFormComponent = ({
+          email,
+          password,
+          error,
+        }: Props) => (
+          // JSX
+        );
+      `,
+      features: ['flow'],
+    },
   ]),
 
   invalid: parsers.all([
